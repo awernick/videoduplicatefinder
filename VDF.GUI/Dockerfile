@@ -18,9 +18,11 @@ RUN dotnet publish VDF.GUI/VDF.GUI.csproj -c Release -r linux-x64 --self-contain
 FROM jlesage/baseimage-gui:ubuntu-24.04-v4
 
 # System dependencies for Avalonia (X11) and VDF (ffmpeg).
-# The jlesage baseimage is missing the 'staff' group, which causes
-# fontconfig-config postinst to fail (chown root:staff).
-RUN groupadd -f staff \
+# The jlesage baseimage constructs /etc/passwd and /etc/group at runtime via
+# s6-overlay. They don't exist during image build, so fontconfig-config's
+# postinst (chown root:staff) fails. Bootstrap the minimal files first.
+RUN echo 'root:x:0:0:root:/root:/bin/sh' > /etc/passwd \
+    && groupadd -f staff \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
