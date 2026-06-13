@@ -23,6 +23,7 @@ FROM jlesage/baseimage-gui:ubuntu-24.04-v4
 # postinst (chown root:staff) fails. Bootstrap the minimal files first.
 RUN echo 'root:x:0:0:root:/root:/bin/sh' > /etc/passwd \
     && groupadd -f staff \
+    && mkdir -p /config/log \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
