@@ -134,7 +134,7 @@ public class ScanRunnerSettingsTests : IDisposable {
 
 		Assert.Equal(12, s.ThumbnailCount);
 		Assert.Equal(100, s.ThumbnailMaxWidth);              // default
-		Assert.Equal(1, s.MaxDegreeOfParallelism);           // default
+		Assert.Equal(-1, s.MaxDegreeOfParallelism);           // default (auto)
 		Assert.Equal((byte)5, s.Threshhold);                 // default
 		Assert.Equal(96f, s.Percent);                        // default
 		Assert.True(s.IncludeSubDirectories);                // default true

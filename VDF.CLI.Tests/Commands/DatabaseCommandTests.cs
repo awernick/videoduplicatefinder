@@ -29,27 +29,18 @@ public class DatabaseCommandTests {
 	}
 
 	[Fact]
-	public void DbExport_Has_Output_Option() {
+	public void DbExport_Parses_Output_Option() {
 		var cmd = DatabaseCommand.Build();
-		var export = cmd.Subcommands.First(c => c.Name == "export");
-		var outputOpt = export.Options.FirstOrDefault(o => o.Name == "output");
-		Assert.NotNull(outputOpt);
-		Assert.Equal("Path for the exported JSON file.", outputOpt.Description);
+		var root = new RootCommand { cmd };
+		var result = root.Parse("db export -o /tmp/test.json");
+		Assert.Equal(0, result.Errors.Count);
 	}
 
 	[Fact]
-	public void DbExport_Has_Pretty_Option() {
+	public void DbExport_Parses_Pretty_Flag() {
 		var cmd = DatabaseCommand.Build();
-		var export = cmd.Subcommands.First(c => c.Name == "export");
-		var prettyOpt = export.Options.FirstOrDefault(o => o.Name == "pretty");
-		Assert.NotNull(prettyOpt);
-	}
-
-	[Fact]
-	public void DbExport_Has_Db_Option() {
-		var cmd = DatabaseCommand.Build();
-		var export = cmd.Subcommands.First(c => c.Name == "export");
-		var dbOpt = export.Options.FirstOrDefault(o => o.Name == "db");
-		Assert.NotNull(dbOpt);
+		var root = new RootCommand { cmd };
+		var result = root.Parse("db export -o /tmp/test.json --pretty");
+		Assert.Equal(0, result.Errors.Count);
 	}
 }

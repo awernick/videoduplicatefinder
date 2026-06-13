@@ -44,8 +44,8 @@ namespace VDF.CLI.Commands {
 		};
 
 		internal static readonly Option<int> Parallelism = new("--parallelism") {
-			Description = "Maximum degree of parallelism for hashing. Default: 1.",
-			DefaultValueFactory = _ => 1
+			Description = "Maximum degree of parallelism for hashing. -1 = auto. Default: -1.",
+			DefaultValueFactory = _ => -1
 		};
 
 		internal static readonly Option<string?> Database = new("--db") {
