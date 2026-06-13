@@ -15,7 +15,7 @@ COPY VDF.GUI/ VDF.GUI/
 RUN dotnet publish VDF.GUI/VDF.GUI.csproj -c Release -r linux-x64 --self-contained true -o /app
 
 # Stage 2: Runtime with VNC
-FROM jlesage/baseimage-gui:ubuntu-24.04
+FROM jlesage/baseimage-gui:ubuntu-24.04-v4
 
 # System dependencies for Avalonia (X11) and VDF (ffmpeg).
 RUN apt-get update && apt-get install -y --no-install-recommends \
