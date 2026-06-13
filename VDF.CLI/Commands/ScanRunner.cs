@@ -21,10 +21,23 @@ using VDF.Core.ViewModels;
 namespace VDF.CLI.Commands {
 	/// <summary>Drives ScanEngine operations and bridges the async-void/event API to awaitable Tasks.</summary>
 	internal static class ScanRunner {
-		/// <summary>Runs StartSearch() then StartCompare() (the full pipeline).</summary>
+		/// <summary>Runs StartSearch() then waits for the built-in StartCompare() to finish.</summary>
 		internal static async Task<HashSet<DuplicateItem>> RunScanAndCompareAsync(ScanEngine engine, CancellationToken ct) {
 			await RunSearchAsync(engine, ct);
-			return await RunCompareAsync(engine, ct);
+			// StartSearch already called StartCompare internally after BuildingHashesDone fired.
+			// Do NOT call RunCompareAsync — that would run StartCompare a second time, causing
+			// two concurrent SaveDatabase() calls to race on File.Move.
+			var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+			engine.ScanDone += OnDone;
+			engine.ScanAborted += OnAborted;
+			ct.Register(() => { engine.Stop(); tcs.TrySetCanceled(); });
+			await tcs.Task;
+			engine.ScanDone -= OnDone;
+			engine.ScanAborted -= OnAborted;
+			return engine.Duplicates;
+
+			void OnDone(object? s, EventArgs e) => tcs.TrySetResult();
+			void OnAborted(object? s, EventArgs e) => tcs.TrySetCanceled();
 		}
 
 		/// <summary>Runs StartSearch() only (enumerate files and build hashes).</summary>
